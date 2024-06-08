@@ -14,11 +14,10 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    return await this.prisma.products.create({data:createProductDto})
+    return await this.prisma.products.create({ data: createProductDto });
   }
 
   async uploadImage(image: Express.Multer.File) {
-    
     try {
       const webpBuffer = await this.sharpService
         .edit(image.buffer)
@@ -36,16 +35,21 @@ export class ProductsService {
     }
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll() {
+    return await this.prisma.products.findMany({ where: { stock: true } });
+    // return `This action returns all products`;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} product`;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    // return `This action updates a #${id} product`;
+    return await this.prisma.products.update({
+      data: updateProductDto,
+      where: { id },
+    });
   }
 
   remove(id: number) {
