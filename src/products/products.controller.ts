@@ -54,7 +54,8 @@ export class ProductsController {
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    console.log(image);
+    // console.log(image);
+    console.log(updateProductDto);
     if (image) {
       const url = (await this.productsService.uploadImage(image)).url;
       return this.productsService.update(id, { ...updateProductDto, url });
