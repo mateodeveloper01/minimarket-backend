@@ -8,11 +8,13 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Category } from '@prisma/client';
 
 @Controller('products')
 export class ProductsController {
@@ -33,8 +35,11 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(
+    @Query('category') category?: Category,
+    @Query('stock') stock?: Boolean,
+  ) {
+    return this.productsService.findAll(category,stock);
   }
 
   @Get(':id')
@@ -44,14 +49,15 @@ export class ProductsController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
- async update(
+  async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
+    console.log(image);
     if (image) {
       const url = (await this.productsService.uploadImage(image)).url;
-      return this.productsService.update(id,{ ...updateProductDto, url });
+      return this.productsService.update(id, { ...updateProductDto, url });
     }
     return this.productsService.update(id, updateProductDto);
   }

@@ -23,6 +23,8 @@ export class CreateProductDto {
     
     @IsOptional()
     url
+    @IsOptional()
+    image
 
     @IsBoolean()
     stock:boolean

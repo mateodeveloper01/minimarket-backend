@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma.service';
 import { CloudinaryService } from 'nestjs-cloudinary';
 import { SharpService } from 'nestjs-sharp';
 import * as fs from 'fs';
+import { Category } from '@prisma/client';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -35,8 +36,13 @@ export class ProductsService {
     }
   }
 
-  async findAll() {
-    return await this.prisma.products.findMany({ where: { stock: true } });
+  async findAll(category?:Category,stock?:Boolean) {
+    if(stock){
+      return await this.prisma.products.findMany({ where: { stock:true,category:category } });
+    }else{
+    return await this.prisma.products.findMany({ where: { category:category } });
+
+    }
     // return `This action returns all products`;
   }
 
