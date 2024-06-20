@@ -14,7 +14,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Category } from '@prisma/client';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -36,10 +36,11 @@ export class ProductsController {
 
   @Get()
   findAll(
-    @Query('category') category?: Category,
-    @Query('stock') stock?: Boolean,
+    @Query() paginationDto: PaginationDto,
+    // @Query('category') category?: Category, 
+    // @Query('stock') stock?: Boolean,
   ) {
-    return this.productsService.findAll(category,stock);
+    return this.productsService.findAll(paginationDto);
   }
 
   @Get(':id')
@@ -51,11 +52,9 @@ export class ProductsController {
   @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() image: Express.Multer.File,
+    @Body() updateProductDto: UpdateProductDto,
   ) {
-    // console.log(image);
-    console.log(updateProductDto);
     if (image) {
       const url = (await this.productsService.uploadImage(image)).url;
       return this.productsService.update(id, { ...updateProductDto, url });

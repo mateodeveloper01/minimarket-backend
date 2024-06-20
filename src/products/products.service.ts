@@ -6,6 +6,7 @@ import { CloudinaryService } from 'nestjs-cloudinary';
 import { SharpService } from 'nestjs-sharp';
 import * as fs from 'fs';
 import { Category } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -15,7 +16,10 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    return await this.prisma.products.create({ data: createProductDto });
+    const stock = createProductDto.stock === 'true' ? true : false;
+    return await this.prisma.products.create({
+      data: { ...createProductDto, stock },
+    });
   }
 
   async uploadImage(image: Express.Multer.File) {
@@ -36,14 +40,16 @@ export class ProductsService {
     }
   }
 
-  async findAll(category?:Category,stock?:Boolean) {
-    if(stock){
-      return await this.prisma.products.findMany({ where: { stock:true,category:category } });
-    }else{
-    return await this.prisma.products.findMany({ where: { category:category } });
-
-    }
-    // return `This action returns all products`;
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0, category, stock } = paginationDto;
+    return await this.prisma.products.findMany({
+      take: limit,
+      skip: offset,
+      where:
+        stock || category
+          ? { stock: true, category: category }
+          : { category: category },
+    });
   }
 
   findOne(id: number) {
@@ -51,9 +57,9 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    // return `This action updates a #${id} product`;
+    const stock = updateProductDto.stock === 'true' ? true : false;
     return await this.prisma.products.update({
-      data: updateProductDto,
+      data: { ...updateProductDto, stock },
       where: { id },
     });
   }
