@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma.service';
 import { CloudinaryService } from 'nestjs-cloudinary';
 import { SharpService } from 'nestjs-sharp';
 import * as fs from 'fs';
-import { Category } from '@prisma/client';
+import { Category, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 @Injectable()
 export class ProductsService {
@@ -14,6 +14,27 @@ export class ProductsService {
     private readonly cloudinaryService: CloudinaryService,
     private readonly sharpService: SharpService,
   ) {}
+
+  async search(filter: string) {
+    const filterParts = filter.toLowerCase().split('_');
+    const filterConditions: Prisma.productsWhereInput[] = filterParts.map(
+      (part) => ({
+        OR: [
+          { tipo: { contains: part, mode: 'insensitive' } },
+          { description: { contains: part, mode: 'insensitive' } },
+          { brand: { contains: part, mode: 'insensitive' } },
+          { amount: { contains: part, mode: 'insensitive' } },
+          { url: { contains: part, mode: 'insensitive' } },
+        ],
+      }),
+    );
+    // Realiza la búsqueda utilizando las condiciones del filtro
+    return this.prisma.products.findMany({
+      where: {
+        AND: filterConditions,
+      },
+    });
+  }
 
   async create(createProductDto: CreateProductDto) {
     const stock = createProductDto.stock === 'true' ? true : false;

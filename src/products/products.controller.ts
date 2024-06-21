@@ -20,6 +20,12 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Get('search')
+  async search(@Query('filter') filter: string) {
+    return this.productsService.search(filter);
+  }
+ 
+
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async create(
@@ -37,8 +43,6 @@ export class ProductsController {
   @Get()
   findAll(
     @Query() paginationDto: PaginationDto,
-    // @Query('category') category?: Category, 
-    // @Query('stock') stock?: Boolean,
   ) {
     return this.productsService.findAll(paginationDto);
   }
