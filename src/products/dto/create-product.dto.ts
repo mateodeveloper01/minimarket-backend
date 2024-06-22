@@ -30,16 +30,12 @@ export class CreateProductDto {
   category: Category;
 
   @IsOptional()
-  url;
+  url:string;
 
   @IsOptional()
-  image;
+  image:any;
 
+  @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
-    if (value === 'true' || value == true) return true;
-    if (value === 'false' || value == false) return false;
-    throw new Error('Invalid boolean value');
-  })
-  stock:string;
+  stock:boolean;
 }

@@ -1,5 +1,13 @@
 import { Category } from '@prisma/client';
-import { IsBoolean, IsNumber, IsOptional, IsPositive, IsString, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class PaginationDto {
   @IsOptional()
@@ -11,7 +19,7 @@ export class PaginationDto {
   @IsOptional()
   @IsPositive()
   @IsNumber()
-  offset?: number;
+  page?: number;
 
   @IsOptional()
   @IsString()
@@ -19,5 +27,5 @@ export class PaginationDto {
 
   @IsOptional()
   @IsBoolean()
-  stock?: Boolean;
+  stock?: boolean;
 }

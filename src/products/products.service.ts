@@ -37,9 +37,8 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto) {
-    const stock = createProductDto.stock === 'true' ? true : false;
     return await this.prisma.products.create({
-      data: { ...createProductDto, stock },
+      data: { ...createProductDto },
     });
   }
 
@@ -62,14 +61,20 @@ export class ProductsService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0, category, stock } = paginationDto;
+    const { limit = 10, page = 1, category } = paginationDto;
+    const stock = paginationDto.stock && true 
+
+    const offset = (page - 1) * limit;
+
     return await this.prisma.products.findMany({
       take: limit,
       skip: offset,
-      where:
-        stock || category
-          ? { stock: true, category: category }
-          : { category: category },
+      where: {
+        AND: [
+          stock !== undefined ? { stock } : {},
+          category !== undefined ? { category } : {},
+        ],
+      },
     });
   }
 
@@ -78,7 +83,7 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    const stock = updateProductDto.stock === 'true' ? true : false;
+    const stock = updateProductDto.stock ? true : false;
     return await this.prisma.products.update({
       data: { ...updateProductDto, stock },
       where: { id },
