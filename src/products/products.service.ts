@@ -62,7 +62,7 @@ export class ProductsService {
 
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, page = 1, category } = paginationDto;
-    const stock = paginationDto.stock && true 
+    const stock = paginationDto.stock && true;
 
     const offset = (page - 1) * limit;
 
@@ -90,7 +90,7 @@ export class ProductsService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    return await this.prisma.products.delete({ where: { id } });
   }
 }
