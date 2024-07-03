@@ -66,7 +66,11 @@ export class ProductsService {
 
     const offset = (page - 1) * limit;
 
-    return await this.prisma.products.findMany({
+    const totalProducts = await this.prisma.products.count({ where: { stock,category } });
+    const totalPage = Math.ceil(totalProducts / limit);
+
+
+    const data = await this.prisma.products.findMany({
       take: limit,
       skip: offset,
       where: {
@@ -76,6 +80,15 @@ export class ProductsService {
         ],
       },
     });
+
+    return {
+      data,
+      meta: {
+        total: totalProducts,
+        page,
+        totalPage,
+      },
+    };
   }
 
   findOne(id: number) {
