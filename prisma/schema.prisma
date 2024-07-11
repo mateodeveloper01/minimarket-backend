@@ -19,7 +19,8 @@ enum Category {
   frescos
   limpieza
   golosinas
-  otros
+  galletas
+  snacks
 }
 
 
