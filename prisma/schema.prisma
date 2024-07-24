@@ -21,6 +21,7 @@ enum Category {
   golosinas
   galletas
   snacks
+  condimentos
 }
 
 
