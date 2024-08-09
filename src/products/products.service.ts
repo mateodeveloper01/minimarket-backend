@@ -79,6 +79,10 @@ export class ProductsService {
           category !== undefined ? { category } : {},
         ],
       },
+      orderBy:{
+        tipo:'asc',
+        // description:'asc'
+      }
     });
 
     return {
@@ -91,9 +95,7 @@ export class ProductsService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
+
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     const stock = updateProductDto.stock ? true : false;
