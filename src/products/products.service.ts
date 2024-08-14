@@ -18,7 +18,6 @@ export class ProductsService {
   async search(filter: string) {  
     const normalizeString = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const filterParts = normalizeString(filter.toLowerCase()).split('_');
-    console.log(filterParts);
 
     const filterConditions: Prisma.productsWhereInput[] = filterParts.map(
       (part) => ({
