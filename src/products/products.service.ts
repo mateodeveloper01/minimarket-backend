@@ -15,8 +15,11 @@ export class ProductsService {
     private readonly sharpService: SharpService,
   ) {}
 
-  async search(filter: string) {
-    const filterParts = filter.toLowerCase().split('_');
+  async search(filter: string) {  
+    const normalizeString = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const filterParts = normalizeString(filter.toLowerCase()).split('_');
+    console.log(filterParts);
+
     const filterConditions: Prisma.productsWhereInput[] = filterParts.map(
       (part) => ({
         OR: [
@@ -37,8 +40,15 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto) {
+    const {amount,brand,description,tipo,...createProduct}= createProductDto
     return await this.prisma.products.create({
-      data: { ...createProductDto },
+      data: { 
+          ...createProduct,
+          tipo:tipo.toLowerCase(),
+          description:description.toLowerCase(),
+          brand:brand.toLocaleLowerCase(),
+          amount:amount.toLocaleLowerCase(),
+        },
     });
   }
 
