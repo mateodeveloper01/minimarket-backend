@@ -15,16 +15,26 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { Category } from '@prisma/client';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get('search')
-  async search(@Query('filter') filter: string) {
+  search(@Query('filter') filter: string) {
     return this.productsService.search(filter);
   }
- 
+
+  @Get('tipos/:category?')
+  getTipos(@Param('category') category?: Category) {
+    return this.productsService.getTipos(category);
+  }
+
+  @Get('brand/:category?')
+  getBrand(@Param('category') category?: Category) {
+    return this.productsService.getBrand(category);
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
@@ -41,13 +51,9 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(
-    @Query() paginationDto: PaginationDto,
-  ) {
+  findAll(@Query() paginationDto: PaginationDto) {
     return this.productsService.findAll(paginationDto);
   }
-
-
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))

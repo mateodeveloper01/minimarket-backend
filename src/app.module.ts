@@ -6,7 +6,8 @@ import * as winston from 'winston';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './common/logging.interceptor';
 @Module({
-  imports: [ProductsModule,
+  imports: [
+    ProductsModule,
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
@@ -21,9 +22,12 @@ import { LoggingInterceptor } from './common/logging.interceptor';
     }),
   ],
   controllers: [],
-  providers: [PrismaService, {
-    provide: APP_INTERCEPTOR,
-    useClass: LoggingInterceptor,
-  },],
+  providers: [
+    PrismaService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}

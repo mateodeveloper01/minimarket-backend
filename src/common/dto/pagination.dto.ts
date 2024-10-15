@@ -28,4 +28,12 @@ export class PaginationDto {
   @IsOptional()
   @IsBoolean()
   stock?: boolean;
+
+  @IsOptional()
+  @IsString()
+  brand?: string;
+
+  @IsOptional()
+  @IsString()
+  tipo?: string;
 }

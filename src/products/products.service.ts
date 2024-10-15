@@ -15,9 +15,10 @@ export class ProductsService {
     private readonly sharpService: SharpService,
   ) {}
 
-  async search(filter: string) {  
-    const normalizeString = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const filterParts = normalizeString(filter.toLowerCase()).split('_');
+  async search(filter: string) {
+    const normalizeString = (str: string) =>
+      str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const filterParts = normalizeString(filter.toLowerCase()).split('_');
 
     const filterConditions: Prisma.productsWhereInput[] = filterParts.map(
       (part) => ({
@@ -39,15 +40,16 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto) {
-    const {amount,brand,description,tipo,...createProduct}= createProductDto
+    const { amount, brand, description, tipo, ...createProduct } =
+      createProductDto;
     return await this.prisma.products.create({
-      data: { 
-          ...createProduct,
-          tipo:tipo.toLowerCase(),
-          description:description.toLowerCase(),
-          brand:brand.toLocaleLowerCase(),
-          amount:amount.toLocaleLowerCase(),
-        },
+      data: {
+        ...createProduct,
+        tipo: tipo.toLowerCase(),
+        description: description.toLowerCase(),
+        brand: brand.toLocaleLowerCase(),
+        amount: amount.toLocaleLowerCase(),
+      },
     });
   }
 
@@ -70,14 +72,15 @@ export class ProductsService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 10, page = 1, category } = paginationDto;
+    const { limit = 10, page = 1, category, brand, tipo } = paginationDto;
     const stock = paginationDto.stock && true;
 
     const offset = (page - 1) * limit;
 
-    const totalProducts = await this.prisma.products.count({ where: { stock,category } });
+    const totalProducts = await this.prisma.products.count({
+      where: { stock, category },
+    });
     const totalPage = Math.ceil(totalProducts / limit);
-
 
     const data = await this.prisma.products.findMany({
       take: limit,
@@ -86,12 +89,14 @@ export class ProductsService {
         AND: [
           stock !== undefined ? { stock } : {},
           category !== undefined ? { category } : {},
+          brand !== undefined ? { brand } : {},
+          tipo !== undefined ? { tipo } : {},
         ],
       },
-      orderBy:{
-        tipo:'asc',
+      orderBy: {
+        tipo: 'asc',
         // description:'asc'
-      }
+      },
     });
 
     return {
@@ -104,8 +109,6 @@ export class ProductsService {
     };
   }
 
-
-
   async update(id: string, updateProductDto: UpdateProductDto) {
     const stock = updateProductDto.stock ? true : false;
     return await this.prisma.products.update({
@@ -116,5 +119,25 @@ export class ProductsService {
 
   async remove(id: string) {
     return await this.prisma.products.delete({ where: { id } });
+  }
+
+  async getTipos(category?: Category) {
+    const whereClause = category ? { category } : {};
+    return await this.prisma.products.findMany({
+      where: whereClause,
+      select: { tipo: true },
+      distinct: ['tipo'],
+    });
+  }
+
+  async getBrand(category?: Category) {
+    const whereClause = category ? { category } : {};
+
+    return await this.prisma.products.findMany({
+      where: whereClause,
+
+      select: { brand: true },
+      distinct: ['brand'],
+    });
   }
 }
